@@ -4,9 +4,17 @@ A data visualization tool that outputs a single graph showing the current housin
 
 ## Migrations
 
-Migration files are timestamped SQL files stored in the `migrations/` directory.
+Migration files are timestamped SQL files stored in the `migrations/` directory. Migration history is tracked in a `migrations` table in the database.
 
-The default database connection is `postgres://localhost/commodify`. Override it by setting the `DATABASE_URL` environment variable.
+Configure the database connection in `.env` (copy `.env.example` to get started):
+
+```bash
+cp .env.example .env
+```
+
+```env
+DATABASE_URL=postgres://user:pass@host/db
+```
 
 ### Commands
 
@@ -16,22 +24,23 @@ The default database connection is `postgres://localhost/commodify`. Override it
 make migrate-create
 ```
 
-You will be prompted for a name. The file is created at `migrations/<timestamp>_<name>.sql`.
+Prompts for a name and creates two files:
 
 ```
 Name: create_users
 Created: migrations/20260517143022_create_users.sql
+Created: migrations/20260517143022_create_users_down.sql
 ```
 
-**Run all migrations**
+The `_down.sql` file is used for rollbacks. Fill it with the SQL to undo the corresponding migration (e.g. `DROP TABLE`).
+
+**Run migrations**
 
 ```bash
 make migrate-run
-# or with a custom database URL
-DATABASE_URL=postgres://user:pass@host/db make migrate-run
 ```
 
-Runs all `.sql` files in `migrations/` in chronological order against the configured Postgres database.
+Creates the `migrations` table if it does not exist, then runs all pending up migrations in chronological order. Already-applied migrations are skipped.
 
 **Rollback**
 
@@ -39,6 +48,12 @@ Runs all `.sql` files in `migrations/` in chronological order against the config
 make migrate-rollback
 ```
 
-Removes the most recently created migration file. Note: this is file-level only — it does not undo SQL already applied to the database.
+Looks up the most recently applied migration from the `migrations` table, executes its `_down.sql` file, and removes the record. One migration is rolled back per invocation.
 
-The `migrations/` directory is created automatically if it does not exist.
+### migrations table
+
+```sql
+id         SERIAL PRIMARY KEY
+name       TEXT NOT NULL UNIQUE   -- e.g. 20260517143022_create_users.sql
+applied_at TIMESTAMPTZ DEFAULT NOW()
+```
