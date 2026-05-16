@@ -1,0 +1,5 @@
+CREATE TABLE entities (
+    id SERIAL PRIMARY KEY,
+    country VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
