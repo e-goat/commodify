@@ -49,11 +49,3 @@ make migrate-rollback
 ```
 
 Looks up the most recently applied migration from the `migrations` table, executes its `_down.sql` file, and removes the record. One migration is rolled back per invocation.
-
-### migrations table
-
-```sql
-id         SERIAL PRIMARY KEY
-name       TEXT NOT NULL UNIQUE   -- e.g. 20260517143022_create_users.sql
-applied_at TIMESTAMPTZ DEFAULT NOW()
-```
