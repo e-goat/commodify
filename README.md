@@ -1,6 +1,7 @@
 # Commodify
+NOTE: This software is work in progress.
 
-A data visualization tool that outputs a single graph showing the current housing market average price per country.
+Single graph showing the current housing market average price per country.
 
 ## Migrations
 
